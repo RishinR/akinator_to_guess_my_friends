@@ -51,15 +51,42 @@ def build_tree():
 
     return root
 
-def traverse_tree(node):
+def traverse_tree(node, prev=None):
+    if node is None:
+        print("I couldn't guess your friend. Please provide more information.")
+        new_friend = input("Enter the name of your friend: ")
+        new_question = input(f"Provide a yes/no question that distinguishes {new_friend} from the previous friend: ")
+        response = input(f"For {new_friend}, what would the answer be to the question: {new_question} (y/n): ")
+
+        if response.lower() == 'y':
+            new_node = Node(guess=new_friend)
+        else:
+            new_node = Node(guess=node.guess)
+
+        if prev:
+            prev.no_node = new_node
+        else:
+            return new_node
+
+        print(f"Thanks for teaching me about {new_friend}!")
+
+        # Save the updated tree
+        save_tree(node, 'friend_tree.pkl')
+        return
+
     if node.question:
         response = input(node.question + " (y/n): ")
         if response.lower() == 'y':
-            traverse_tree(node.yes_node)
+            traverse_tree(node.yes_node, node)
         else:
-            traverse_tree(node.no_node)
+            traverse_tree(node.no_node, node)
     else:
-        print(f"I guess your friend is {node.guess}.")
+        response = input(f"Is your friend {node.guess}? (y/n): ")
+        if response.lower() == 'y':
+            print(f"I guessed correctly! Your friend is {node.guess}.")
+        else:
+            print("I couldn't guess your friend. Please provide more information.")
+
 
 def save_tree(tree, filename):
     with open(filename, 'wb') as file:
@@ -69,20 +96,26 @@ def load_tree(filename):
     with open(filename, 'rb') as file:
         return pickle.load(file)
 
-if __name__ == "__main__":
-    friend_tree = build_tree()
+import os
+def main():
+    filename = 'friend_tree.pkl'
+    
+    if os.path.exists(filename):
+        loaded_tree = load_tree(filename)
+        print("Loaded existing friend tree.")
+    else:
+        loaded_tree = build_tree()
+        print("No existing friend tree found. Created a new one.")
+
     print("Welcome to the Friend Guessing Game!")
     time.sleep(1)
     print("Think of a friend, and I will try to guess who it is.")
     time.sleep(1)
 
-    traverse_tree(friend_tree)
-
-    # Save the tree
-    save_tree(friend_tree, 'friend_tree.pkl')
-
-    # Load the tree
-    loaded_tree = load_tree('friend_tree.pkl')
-
-    # You can use the loaded_tree as needed
     traverse_tree(loaded_tree)
+
+    # Save the updated tree
+    save_tree(loaded_tree, filename)
+
+if __name__ == "__main__":
+    main()
