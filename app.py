@@ -87,6 +87,16 @@ def traverse_tree(node, prev=None):
         else:
             print("I couldn't guess your friend. Please provide more information.")
 
+            new_friend = input("Friends name")
+            feature = input(f"Feature of {new_friend}")
+
+            old_friend = node.guess
+
+            node.question = f"is your friend {feature}"
+            node.yes_node = Node(guess=new_friend)
+
+            node.no_node = Node(guess=old_friend)
+            
 
 def save_tree(tree, filename):
     with open(filename, 'wb') as file:
