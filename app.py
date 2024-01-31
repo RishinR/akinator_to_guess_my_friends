@@ -59,9 +59,9 @@ def traverse_tree(node, prev=None):
         response = input(f"For {new_friend}, what would the answer be to the question: {new_question} (y/n): ")
 
         if response.lower() == 'y':
-            new_node = Node(guess=new_friend)
+            new_node = Node(new_question,yes_node=Node(guess=new_friend))
         else:
-            new_node = Node(guess=node.guess)
+            new_node = Node(new_question,no_node=Node(guess=new_friend))
 
         if prev:
             prev.no_node = new_node
